@@ -9,8 +9,8 @@ sex_idx=find(strcmpi(TBD(:,1),'sex'));
     numericVec = cellfun(@(x) double(x), TBD(1,:));
 
 % Set directory containing CSV files
-backupDir = '/Users/timnas/Documents/projects/BloodDonation/excluded_or_editted_data/';
-csvDir= '/Users/timnas/Documents/projects/BloodDonation/hol_data/';
+backupDir = 'C:\Users\dhonig.WISMAIN\Documents\projects\BloodDonation/excluded_or_editted_data/';
+csvDir= 'C:\Users\dhonig.WISMAIN\Documents\projects\BloodDonation\all data clean\';
 files = dir(fullfile(csvDir, '*.csv'));
 
 % Step 1: QA- check that data were not duplicated
@@ -152,7 +152,7 @@ end
 
 
 stringMatrix = reshape([validated_vals{:}],2, []);
-save('/Users/timnas/Documents/projects/BloodDonation/Holter_timings.mat','subjData');
+save('Holter_timings.mat','subjData');
 
 function [in,out,validated_vals]= extract_timings(fullData,code)
 if any(strcmpi(fullData.Properties.VariableNames, 'comment'))
