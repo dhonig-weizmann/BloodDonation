@@ -1,7 +1,9 @@
 clear
 % in hol_data there are all raw files excpect: 13,34,57 that did not donated
 
-TBD=readcell('/Users/timnas/Documents/projects/BloodDonation/BloodDonationTable102.xlsx');
+excelFile = 'C:\Users\dhonig.WISMAIN\Documents\projects\BloodDonation\bloodDonationTable107.xlsx'
+
+TBD=readcell(excelFile);
 sex_idx=find(strcmpi(TBD(:,1),'sex'));
 
     numericVec = cellfun(@(x) double(x), TBD(1,:));
