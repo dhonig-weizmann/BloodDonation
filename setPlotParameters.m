@@ -1,0 +1,5 @@
+function setPlotParameters(titleString)
+xlabel("Time(s)", "FontSize",16)
+ylabel("Airflow(ml/s)", "FontSize",16)
+title(titleString)
+ylim([-5,5])

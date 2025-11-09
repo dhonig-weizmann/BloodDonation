@@ -1,7 +1,7 @@
 clear
 % in hol_data there are all raw files excpect: 13,34,57 that did not donated
 
-excelFile = 'C:\Users\dhonig.WISMAIN\Documents\projects\BloodDonation\bloodDonationTable107.xlsx'
+excelFile = 'C:\Users\dhonig.WISMAIN\Documents\projects\BloodDonation\bloodDonationTable102.xlsx'
 
 TBD=readcell(excelFile);
 sex_idx=find(strcmpi(TBD(:,1),'sex'));

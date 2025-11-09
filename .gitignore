@@ -1,0 +1,8 @@
+# data
+all data clean/
+excluded_or_editted_data/
+all data clean (1).zip
+breathmetrics/
+
+# mat files
+*.mat

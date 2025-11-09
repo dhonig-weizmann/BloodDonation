@@ -7,55 +7,55 @@ rng(50)
 norm=1; %1=80%, 0=50%
 IntLength=5; % 5 is the best
 to_plot=0;
-Fs=25; 
+Fs=25;
 load('Holter_timings.mat');
 %%
 subjData(91)=[]; %have short after (*technical issue)
 
 %%
 for i=1:size(subjData,2)
- [before{i},after{i},donation{i},NCbefore{i},NCafter{i},NCdonation{i}]=extract_timings_needle(i,norm, IntLength,subjData);
+    [before{i},after{i},donation{i},NCbefore{i},NCafter{i},NCdonation{i}]=extract_timings_needle(i,norm, IntLength,subjData);
 end
-
- %%
-
-
-
-  noiseThreshold=0;
-
- for i=1:size(NCbefore,2)
-     if ismember(i,[42,63,65]) 
-         Fs=6;
-     else
-         Fs=25;
-     end
-[Laterality_IndexB(i),BmeasureResults(i)]=NasalCycleParameters(NCbefore{i},Fs,noiseThreshold);
-[Laterality_IndexA(i),AmeasureResults(i)]=NasalCycleParameters(NCafter{i},Fs,noiseThreshold);
-%[Laterality_IndexD(i),DmeasureResults(i)]=NasalCycleParameters(NCdonation{i},Fs,noiseThreshold);
- end
-
-  for i=1:size(NCbefore,2)
-      if ~isempty([Laterality_IndexA(i).one])
- LI_ampB(i,:)=abs([Laterality_IndexB(i).one]);
- LI_B(i,:)=[Laterality_IndexB(i).one];
- LI_ampA(i,1:length(abs([Laterality_IndexA(i).one])))=abs([Laterality_IndexA(i).one]);
- LI_A(i,1:1:length(abs([Laterality_IndexA(i).one])))=[Laterality_IndexA(i).one];
-      end
-  end
 
 %%
 
- fields=fieldnames(BmeasureResults);
+
+
+noiseThreshold=0;
+
+for i=1:size(NCbefore,2)
+    if ismember(i,[42,63,65])
+        Fs=6;
+    else
+        Fs=25;
+    end
+    [Laterality_IndexB(i),BmeasureResults(i)]=NasalCycleParameters(NCbefore{i},Fs,noiseThreshold);
+    [Laterality_IndexA(i),AmeasureResults(i)]=NasalCycleParameters(NCafter{i},Fs,noiseThreshold);
+    %[Laterality_IndexD(i),DmeasureResults(i)]=NasalCycleParameters(NCdonation{i},Fs,noiseThreshold);
+end
+
+for i=1:size(NCbefore,2)
+    if ~isempty([Laterality_IndexA(i).one])
+        LI_ampB(i,:)=abs([Laterality_IndexB(i).one]);
+        LI_B(i,:)=[Laterality_IndexB(i).one];
+        LI_ampA(i,1:length(abs([Laterality_IndexA(i).one])))=abs([Laterality_IndexA(i).one]);
+        LI_A(i,1:1:length(abs([Laterality_IndexA(i).one])))=[Laterality_IndexA(i).one];
+    end
+end
+
+%%
+
+fields=fieldnames(BmeasureResults);
 for i=1:size(fields,1)
     currentfield=fields{i};
-test_values = [BmeasureResults(:).(currentfield)];   
-retest_values = [AmeasureResults(:).(currentfield)]; 
+    test_values = [BmeasureResults(:).(currentfield)];
+    retest_values = [AmeasureResults(:).(currentfield)];
 
-%[p_values(i),~,Wstat(i)] = signrank(test_values, retest_values,"method","approximate");
-[~,p_values_ttest(i)] = ttest2(test_values, retest_values);
+    %[p_values(i),~,Wstat(i)] = signrank(test_values, retest_values,"method","approximate");
+    [~,p_values_ttest(i)] = ttest2(test_values, retest_values);
 
-% fprintf('%s ttest p = %.2f\n',currentfield, p_values_ttest(i))
-%         fprintf(['mean+std before and after' num2str(mean(test_values,'omitnan')) '±' num2str(std(test_values,'omitnan')) ',' num2str(mean(retest_values,'omitnan')) '±' num2str(std(retest_values,'omitnan')) '\n'])
+    % fprintf('%s ttest p = %.2f\n',currentfield, p_values_ttest(i))
+    %         fprintf(['mean+std before and after' num2str(mean(test_values,'omitnan')) '±' num2str(std(test_values,'omitnan')) ',' num2str(mean(retest_values,'omitnan')) '±' num2str(std(retest_values,'omitnan')) '\n'])
 end
 
 %% big differences
@@ -97,27 +97,27 @@ Y_test=Y(sex_vec);
 n=size(X_train,1)/2;
 for i=1:size(X_train,2)
     %currentfield=fields{i};
-    test_values = X_train(1:n,i);  
-retest_values = X_train(n+1:end,i);
+    test_values = X_train(1:n,i);
+    retest_values = X_train(n+1:end,i);
 
-[~,tp_value24(i),~,tstat24(i)] = ttest2(test_values, retest_values);
+    [~,tp_value24(i),~,tstat24(i)] = ttest2(test_values, retest_values);
 
-                % Descriptives
+    % Descriptives
     mx = mean(test_values, 'omitnan'); sx = std(test_values, 'omitnan'); nx = numel(test_values);
     my = mean(retest_values, 'omitnan'); sy = std(retest_values, 'omitnan'); ny = numel(retest_values);
 
     valid = ~isnan(test_values) & ~isnan(retest_values);
-        x = test_values(valid);
-        y = retest_values(valid);
-        [~,p,~,stats] = ttest2(x, y);
-        % Effect size: Cohen's dz for paired (mean diff / SD diff)
-            df = stats.df; tval = stats.tstat;
-varName=currentfield;
+    x = test_values(valid);
+    y = retest_values(valid);
+    [~,p,~,stats] = ttest2(x, y);
+    % Effect size: Cohen's dz for paired (mean diff / SD diff)
+    df = stats.df; tval = stats.tstat;
+    varName=currentfield;
     fprintf('%s: t(%d)=%.2f, p=%.4g]\n', ...
         varName, df, tval, p);
     fprintf('   before: %0.3f \xB1 %0.3f (n=%d);  after: %0.3f \xB1 %0.3f (n=%d)\n', ...
         mx, sx, nx, my, sy, ny);
-                      %  fprintf(['mean+std before and after' num2str(mean(test_values,'omitnan')) '±' num2str(std(test_values,'omitnan')) ',' num2str(mean(retest_values,'omitnan')) '±' num2str(std(retest_values,'omitnan')) '\n'])
+    %  fprintf(['mean+std before and after' num2str(mean(test_values,'omitnan')) '±' num2str(std(test_values,'omitnan')) ',' num2str(mean(retest_values,'omitnan')) '±' num2str(std(retest_values,'omitnan')) '\n'])
 
 end
 
@@ -138,7 +138,7 @@ X_test_sel  = X_test(:, top_features_idx);
 for f = 1:size(X_train_sel,2)
     nan_idx_train = isnan(X_train_sel(:,f));
     X_train_sel(nan_idx_train,f) = median(X_train_sel(:,f), 'omitnan');
-    
+
     nan_idx_test = isnan(X_test_sel(:,f));
     X_test_sel(nan_idx_test,f) = median(X_train_sel(:,f), 'omitnan'); % use training median
 end
@@ -154,16 +154,16 @@ cv_accuracy = zeros(length(classifier_names),1);
 
 for c = 1:length(classifier_names)
     acc_fold = zeros(K,1);  % accuracy per fold
-    
+
     for k = 1:K
         trIdx = training(cv,k);
         valIdx = test(cv,k);
-        
+
         Xtr = X_train_sel(trIdx,:);
         Ytr = Y_train(trIdx);
         Xval = X_train_sel(valIdx,:);
         Yval = Y_train(valIdx);
-        
+
         % Train classifier
         switch classifier_names{c}
             case 'SVM-linear'
@@ -174,17 +174,17 @@ for c = 1:length(classifier_names)
                 mdl = fitcknn(Xtr,Ytr,'NumNeighbors',5);
             case 'DecisionTree'
                 mdl = fitctree(Xtr,Ytr,    'SplitCriterion', 'gdi', ...
-    'MaxNumSplits', 4, ...
-    'Surrogate', 'off');
+                    'MaxNumSplits', 4, ...
+                    'Surrogate', 'off');
             case 'Logistic'
                 mdl = fitclinear(Xtr,Ytr,'Learner','logistic');
         end
-        
+
         % Predict on validation fold
         Ypred = predict(mdl,Xval);
         acc_fold(k) = sum(Ypred == Yval)/length(Yval);
     end
-    
+
     cv_accuracy(c) = mean(acc_fold); % mean CV accuracy
 end
 
@@ -223,23 +223,23 @@ disp(['Test Accuracy: ', num2str(accuracY_test)]);
 
 % Compute ROC
 % Define the positive class value exactly as in your labels:
-    posClass = 2;  % <-- change if your positive class is, e.g., true/'positive'/categorical('1')
+posClass = 2;  % <-- change if your positive class is, e.g., true/'positive'/categorical('1')
 
-    % Find the score column corresponding to posClass
-    cls = best_clf.ClassNames;            % same order as columns in y_score
-    idx = find(ismember(cls, posClass));  % works for numeric, logical, char, categorical
+% Find the score column corresponding to posClass
+cls = best_clf.ClassNames;            % same order as columns in y_score
+idx = find(ismember(cls, posClass));  % works for numeric, logical, char, categorical
 
-    if isempty(idx)
-        error('Positive class not found in ClassNames. Check posClass.');
-    end
+if isempty(idx)
+    error('Positive class not found in ClassNames. Check posClass.');
+end
 
-    % Scores for the positive class
-    posScores = y_score(:, idx);
+% Scores for the positive class
+posScores = y_score(:, idx);
 
-    % ROC curve & AUC
-    [fpRate, tpRate, ~, AUC] = perfcurve(Y_test, posScores, posClass);
-    fprintf('AUC: %.4f\n', AUC);
-    
+% ROC curve & AUC
+[fpRate, tpRate, ~, AUC] = perfcurve(Y_test, posScores, posClass);
+fprintf('AUC: %.4f\n', AUC);
+
 % Plot ROC curve
 figure;
 plot(fpRate, tpRate, 'b-', 'LineWidth', 2); hold on;
@@ -256,12 +256,12 @@ axis square;
 % for i=1:size(donation,2)
 %     full_don=donation{i};
 %     ints=7;
-%     vals_during{i}=calculate_1min_bin(full_don,ints);  
+%     vals_during{i}=calculate_1min_bin(full_don,ints);
 % end
-% 
-% vals_during_conc = [vals_during{:}];	
+%
+% vals_during_conc = [vals_during{:}];
 % time=[repmat(1:ints,1,size(vals_during,2))];
-% 
+%
 % for i=1:size(fields,1)
 %     current_field=fields{i};
 %         current_vals=[vals_during_conc.(current_field)];
@@ -273,49 +273,49 @@ axis square;
 %         lsline
 %             title([current_field ' p=' num2str(p_spearman)])
 %             set(gca,'FontSize',12)
-% 
+%
 %         end
 %     end
 
 
 
 % function z_breath_values=calculate_1min_bin(before1,num_bins)
-% 
+%
 % if isinteger(length(before1)/num_bins)
 % binned_data = reshape(before1, [], num_bins); % Create a 150x10 matrix
 % else
 %     N = length(before1); % Get vector length
 %     remainder = mod(N, num_bins); % Find remainder when divided by 10
-% 
+%
 %     % Remove the first 'remainder' elements
-%     trimmed_vector = before1(remainder + 1:end); 
-% 
+%     trimmed_vector = before1(remainder + 1:end);
+%
 %     % Compute new length
 %     new_N = length(trimmed_vector);
-% 
+%
 %     % Reshape into a 10-row matrix (each column is a bin)
 %     binned_data = reshape(trimmed_vector, new_N / num_bins, num_bins);
 % end
-% 
+%
 % for i=1:num_bins
-%  if ismember(i,[42,63,65]) 
+%  if ismember(i,[42,63,65])
 %          Fs=6;
 %      else
 %          Fs=25;
 %      end
 % if Fs<25
 %     % peaks1 = peaks_from_ts_fs(binned_data(:,i),Fs);
-%     % 
+%     %
 %     % plot(before{i})
 %     % hold on
 %     % plot([peaks1.PeakLocation],[peaks1.PeakValue],'bo')
-%     % 
+%     %
 %     % z_breath_values(i) = calculate_z_blood(peaks1);
 %     continue
 % else
 %      bmObj=breathmetrics(binned_data(:,i),Fs,'humanAirflow');
 %  bmObj.estimateAllFeatures();
-% 
+%
 %  % Define the variable names as field names in the struct
 % variableNames = {...
 %     'AverageExhaleDuration', 'AverageExhalePauseDuration', 'AverageExhaleVolume', 'AverageInhaleDuration', ...
@@ -325,16 +325,16 @@ axis square;
 %     'CoefficientOfVariationOfInhaleDutyCycle', 'CoefficientOfVariationOfInhalePauseDutyCycle', 'DutyCycleOfExhale', ...
 %     'DutyCycleOfExhalePause', 'DutyCycleOfInhale', 'DutyCycleOfInhalePause', 'MinuteVentilation', 'PercentOfBreathsWithExhalePause', ...
 %     'PercentOfBreathsWithInhalePause'};
-% 
+%
 % values=[bmObj.secondaryFeatures.values];
 % % Assign the values to the struct fields
 % for ii = 1:length(variableNames)
 %     dataStruct.(variableNames{ii}) = values{ii};
 % end
-% 
+%
 %  z_breath_values(i)= dataStruct(:);
 % end
-% 
+%
 % end
 % end
 

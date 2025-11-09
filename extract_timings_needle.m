@@ -21,19 +21,19 @@ resp_stereo(isnan(resp_stereo(:,1)),:)=[];
 sum_resp=sum(resp_stereo,2);
 
 if norm
-sum_resp=zscore(sum_resp);
+    sum_resp=zscore(sum_resp);
 end
 
 sixHzParticipants = {'045', '067','069'};  % example list
-    pid = subjData(i).code;
+pid = subjData(i).code;
 
 
 if ismember(pid, sixHzParticipants)
-        Fs=6;
+    Fs=6;
 else
     Fs=25;
 end
-    total_time_seconds=length(sum_resp)/Fs;
+total_time_seconds=length(sum_resp)/Fs;
 total_time_minutes=total_time_seconds/60;
 
 if total_time_minutes<40
@@ -50,19 +50,19 @@ end
 duration=IntLength*60*Fs;
 %stop1=in;
 % start1=in-(60*25)-duration+1;
- start1=1*60*Fs;
- stop1=start1+duration-1;
+start1=1*60*Fs;
+stop1=start1+duration-1;
 
- stop2=subjData(i).out+duration-1;
- start2=subjData(i).out;
+stop2=subjData(i).out+duration-1;
+start2=subjData(i).out;
 
 
- if stop2>length(sum_resp)
-     stop2=length(sum_resp);
+if stop2>length(sum_resp)
+    stop2=length(sum_resp);
     fprintf('end interval are shorter than wanted\n');
- end
- 
- %  stop2=length(sum_resp);
+end
+
+%  stop2=length(sum_resp);
 %  start2=length(sum_resp)-duration;
 
 % (stop1-start1)/(Fs*60)
@@ -86,9 +86,9 @@ end
 
 
 % % % function [before, after,donation]=NC_analysis(i,IntLength,subjData)
-% % % 
+% % %
 % % % directory='hol_data';
-% % % 
+% % %
 % % % if size(subjData(i).Holter,1)==1
 % % % csv=[directory '/' subjData(i).Holter];
 % % %  T = readtable(csv);
@@ -101,11 +101,11 @@ end
 % % %  T=[T;TT];
 % % % end
 % % % end
-% % % 
-% % % 
+% % %
+% % %
 % % % resp_stereo=table2array(T(:,[4 3]));
-% % % 
-% % % 
+% % %
+% % %
 % % % before=resp_stereo(start1:stop1,:);
 % % % after=resp_stereo(start2:stop2,:);
 % % % donation=resp_stereo(subjData(i).in:subjData(i).out,:);
